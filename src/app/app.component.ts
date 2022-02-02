@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
-import { Plugin } from "@progress/kendo-angular-editor";
+import {Component} from '@angular/core';
+import {Plugin, Schema,EditorComponent} from "@progress/kendo-angular-editor";
 import {inputRule} from "./input-rule";
+import {StructuredFieldPlugin} from "src/app/structured-field.plugin";
+import {ReportingSchema} from "src/app/custom-schema";
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -8,9 +11,20 @@ import {inputRule} from "./input-rule";
 })
 export class AppComponent {
   title = 'angular-kendo';
-  public value = `<p> The Editor enables users to create rich textual content. </p>`;
+  public value = `<philips-sf>Demo content</philips-sf>`;
+  schema: Schema = ReportingSchema
+
+  constructor() {
+
+  }
+
   public myPlugins = (defaultPlugins: Plugin[]): Plugin[] => [
     ...defaultPlugins,
     inputRule(),
+    StructuredFieldPlugin.create()
   ];
+
+  insertStructuredField(editor: EditorComponent) {
+
+  }
 }

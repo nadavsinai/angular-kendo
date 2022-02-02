@@ -1,2 +1,6 @@
 <h1>Kendo Editor</h1>
-<kendo-editor [value]="value" [plugins]="myPlugins"></kendo-editor>
+<kendo-editor #editor [schema]="schema" [iframe]="false" [value]="value" [plugins]="myPlugins">
+  <kendo-toolbar>
+    <kendo-toolbar-button sfButtonComponent></kendo-toolbar-button>
+  </kendo-toolbar>
+</kendo-editor>

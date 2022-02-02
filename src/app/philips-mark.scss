@@ -1,0 +1,16 @@
+philips-sf {
+  background: blue;
+  color: white;
+
+  &::before {
+    content: "[";
+    color: red;
+    padding: 1px;
+  }
+
+  &::after {
+    content: "]";
+    color: red;
+    padding: 1px;
+  }
+}
