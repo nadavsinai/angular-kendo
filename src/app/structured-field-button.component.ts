@@ -1,9 +1,7 @@
 import {Directive, Host, OnInit} from '@angular/core';
-import {EditorComponent, Node} from "@progress/kendo-angular-editor";
+import {EditorComponent, Transaction} from "@progress/kendo-angular-editor";
 import {ToolBarButtonComponent} from "@progress/kendo-angular-toolbar";
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {ReportingSchema} from "src/app/custom-schema";
-import {NodeSelection} from 'prosemirror-state';
 
 @UntilDestroy()
 @Directive({
@@ -23,26 +21,21 @@ export class StructuredFieldButtonComponent implements OnInit {
 
   onClick() {
     const {dispatch, state} = this.editor.view;
+    let tr: Transaction;
     if (this.editor.selectionText.length) {
-      const selection = state.selection
-      dispatch(state.tr.addMark(
-        selection.from,
-        selection.to,
-        ReportingSchema.mark('algotecSf')
-      ));
+      let content = state.selection.content();
+      const newField = state.schema.nodes.PhilipsStructuredField.create(null, content.content)
+      tr = state.tr.replaceSelectionWith(newField);
     } else {
       let startPos = state.selection.from;
-
       // create a text node
       const text = '--';
-      const textNode = state.schema.text(text,[ReportingSchema.mark('algotecSf')]);
-      // create a new node with the text node as a child
-      const paragraphNode: Node = state.schema.nodes.paragraph.create(null, textNode);
-      let tr = state.tr.insert(startPos, paragraphNode);
-      // const resolvedPos = tr.doc.resolve(tr.selection.anchor);
-      // tr = tr.setSelection(new NodeSelection(resolvedPos));
-      dispatch(tr);
+      const textNode = state.schema.text(text);
+      const newField = state.schema.nodes.PhilipsStructuredField.create(null, textNode)
+      tr = state.tr.insert(startPos, newField);
+
     }
+    dispatch(tr);
 
   }
 }

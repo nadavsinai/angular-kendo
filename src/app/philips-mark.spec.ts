@@ -1,23 +1,26 @@
-import {Mark } from "@progress/kendo-angular-editor";
-import {getAttributes, getAttrs, hole} from "@progress/kendo-angular-editor/dist/es2015/config/utils";
-import { MarkSpec,AttributeSpec } from "prosemirror-model";
+import {Node} from "@progress/kendo-angular-editor";
+import {AttributeSpec, NodeSpec} from "prosemirror-model";
+import {hole} from "@progress/kendo-angular-editor/dist/es2015/config/utils";
+import {ReportingSchema} from "./custom-schema";
 
-export class PhilipsMarkSpec implements MarkSpec {
-  attrs: { [p: string]: AttributeSpec } | null | undefined = {"sf-data": {default: ""}}
-  excludes: string | null | undefined = '';
+export class PhilipsStructuredField implements NodeSpec {
+  attrs: { [p: string]: AttributeSpec } | null | undefined = null;
+  group = 'block';
+  defining = true;
+  content = "block*";
+  // content = "text*";
+  isolating = false;
+  parseDOM = [{
+    tag: 'philips-sf',
+    getAttrs: (dom: any) => ({
+      // src: dom.getAttribute(),
+      // style: dom.getAttribute()
+    })
+  }]
 
-  // group: string | null | undefined;
-  // inclusive: boolean | null | undefined;
-  // spanning: boolean | null | undefined;
-
-  parseDOM = [{tag: 'philips-sf', getAttrs: getAttributes}]
-
-  toDOM(mark: Mark<any>, inline: boolean): any {
-    return ['philips-sf', getAttrs(mark.attrs)];
+  toDOM(node: Node<typeof ReportingSchema>): any {
+    return ['philips-sf', {}, hole]; //middle object is for rendering the attributes out of the node, hole is where to put the content (first child)
   }
-
-
-
 
 
 }

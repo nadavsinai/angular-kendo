@@ -1,6 +1,10 @@
 <h1>Kendo Editor</h1>
 <kendo-editor #editor [schema]="schema" [iframe]="false" [value]="value" [plugins]="myPlugins">
   <kendo-toolbar>
+    <kendo-toolbar-button
+      text="Bold button"
+      (click)="editor.exec('bold')"
+    ></kendo-toolbar-button>
     <kendo-toolbar-button sfButtonComponent></kendo-toolbar-button>
   </kendo-toolbar>
 </kendo-editor>
