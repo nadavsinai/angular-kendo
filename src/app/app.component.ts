@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
-import {Plugin, Schema,EditorComponent} from "@progress/kendo-angular-editor";
+import {keymap, Plugin, Schema} from "@progress/kendo-angular-editor";
 import {inputRule} from "./input-rule";
-import {StructuredFieldPlugin} from "src/app/structured-field.plugin";
+import {buildKeymap, StructuredFieldPlugin} from "src/app/structured-field.plugin";
 import {ReportingSchema} from "src/app/custom-schema";
 
 @Component({
@@ -21,6 +21,7 @@ export class AppComponent {
   public myPlugins = (defaultPlugins: Plugin[]): Plugin[] => [
     ...defaultPlugins,
     inputRule(),
+    keymap(buildKeymap(ReportingSchema)),
     StructuredFieldPlugin.create()
   ];
 
