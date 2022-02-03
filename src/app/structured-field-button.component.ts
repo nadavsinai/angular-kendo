@@ -37,7 +37,7 @@ export class StructuredFieldButtonComponent implements OnInit {
       const text = '--';
       const textNode = state.schema.text(text,[ReportingSchema.mark('algotecSf')]);
       // create a new node with the text node as a child
-      const paragraphNode: Node = state.schema.nodes.paragraph.create(null, textNode,  );
+      const paragraphNode: Node = state.schema.nodes.paragraph.create(null, textNode);
       let tr = state.tr.insert(startPos, paragraphNode);
       // const resolvedPos = tr.doc.resolve(tr.selection.anchor);
       // tr = tr.setSelection(new NodeSelection(resolvedPos));

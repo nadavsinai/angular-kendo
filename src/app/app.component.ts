@@ -24,7 +24,4 @@ export class AppComponent {
     StructuredFieldPlugin.create()
   ];
 
-  insertStructuredField(editor: EditorComponent) {
-
-  }
 }
