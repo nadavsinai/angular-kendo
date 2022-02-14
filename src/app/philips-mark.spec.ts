@@ -1,6 +1,6 @@
-import {Mark } from "@progress/kendo-angular-editor";
-import {getAttributes, getAttrs, hole} from "@progress/kendo-angular-editor/dist/es2015/config/utils";
-import { MarkSpec,AttributeSpec } from "prosemirror-model";
+import {Mark} from "@progress/kendo-angular-editor";
+import {getAttributes, getAttrs} from "@progress/kendo-angular-editor/dist/es2015/config/utils";
+import {AttributeSpec, MarkSpec} from "prosemirror-model";
 
 export class PhilipsMarkSpec implements MarkSpec {
   attrs: { [p: string]: AttributeSpec } | null | undefined = {"sf-data": {default: ""}}
@@ -10,14 +10,11 @@ export class PhilipsMarkSpec implements MarkSpec {
   // inclusive: boolean | null | undefined;
   // spanning: boolean | null | undefined;
 
-  parseDOM = [{tag: 'philips-sf', getAttrs: getAttributes}]
+  parseDOM = [{tag: 'span', attrs: {'sf-data': true}, getAttrs: getAttributes}]
 
   toDOM(mark: Mark<any>, inline: boolean): any {
-    return ['philips-sf', getAttrs(mark.attrs)];
+    return ['span', getAttrs(mark.attrs)];
   }
-
-
-
 
 
 }
