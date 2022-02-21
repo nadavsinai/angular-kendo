@@ -1,7 +1,7 @@
-philips-sf {
-  background: blue;
-  color: white;
-  display: block;
+philips-sf-start {
+  //background: blue;
+  //color: white;
+  //display: block;
 
   &::before, ::before {
     display: inline;
@@ -14,8 +14,18 @@ philips-sf {
 
   }
 
+}
+philips-sf-end {
+
+  &::after, ::after {
+    display: inline;
+    color: red;
+    padding: 1px;
+  }
+
   &::after {
     content: "]";
+
   }
 
 }

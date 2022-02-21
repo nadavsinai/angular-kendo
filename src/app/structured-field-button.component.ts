@@ -21,19 +21,21 @@ export class StructuredFieldButtonComponent implements OnInit {
 
   onClick() {
     const {dispatch, state} = this.editor.view;
-    let tr: Transaction;
+    const tr: Transaction = state.tr;
+    const newFieldStart = state.schema.nodes.PhilipsStructuredFieldStart.create(null, null);
+    const newFieldEnd = state.schema.nodes.PhilipsStructuredFieldEnd.create(null, null);
+    let content = state.schema.text('--');
     if (this.editor.selectionText.length) {
-      let content = state.selection.content();
-      const newField = state.schema.nodes.PhilipsStructuredField.create(null, content.content)
-      tr = state.tr.replaceSelectionWith(newField);
+      content = state.selection.content();
+      tr.replaceSelection(content);
+      tr.insert(state.selection.to, newFieldEnd);
+      tr.insert(state.selection.from, newFieldStart);
     } else {
       let startPos = state.selection.from;
-      // create a text node
       const text = '--';
       const textNode = state.schema.text(text);
-      const newField = state.schema.nodes.PhilipsStructuredField.create(null, textNode)
-      tr = state.tr.insert(startPos, newField);
-
+      tr.insert(startPos, [newFieldStart, newFieldEnd]);
+      tr.insert(startPos+1,textNode);
     }
     dispatch(tr);
 
