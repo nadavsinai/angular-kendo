@@ -1,18 +1,37 @@
 ::ng-deep {
-  span[sf-data] {
-    background: blue;
-    color: white;
+  philips-sf-start {
+    //background: blue;
+    //color: white;
+    //display: block;
+
+    &::before, ::before {
+      display: inline;
+      color: red;
+      padding: 1px;
+    }
 
     &::before {
       content: "[";
+
+    }
+
+  }
+
+  philips-sf-end {
+
+    &::after, ::after {
+      display: inline;
       color: red;
       padding: 1px;
     }
 
     &::after {
       content: "]";
-      color: red;
-      padding: 1px;
+
     }
+
   }
 }
+
+
+

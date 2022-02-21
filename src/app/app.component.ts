@@ -11,7 +11,7 @@ import {ReportingSchema} from "src/app/custom-schema";
 })
 export class AppComponent {
   title = 'angular-kendo';
-  public value = `<span sf-data>Demo content</span>`;
+  public value = `<p><span sf-data="123">Demo </span>content</p>`;
   schema: Schema = ReportingSchema
 
   constructor() {
