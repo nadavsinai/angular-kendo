@@ -1,4 +1,4 @@
-import {Decoration, DecorationSet, EditorState, Plugin, Transaction} from "@progress/kendo-angular-editor";
+import {Decoration, DecorationSet, EditorState, Plugin, Transaction,} from "@progress/kendo-angular-editor";
 import {ReportingSchema} from "./custom-schema";
 import {Selection} from "prosemirror-state";
 
@@ -12,7 +12,14 @@ export class StructuredFieldPlugin extends Plugin<DecorationSet<typeof Reporting
   constructor() {
     super({
       state: {
-        init(_, {doc}) {
+        init(_, {schema, doc}) {
+          doc.nodesBetween(0, doc.nodeSize - 2, (node, pos, parent, index) => {
+            if (node.type === schema.nodes.PhilipsStructuredFieldStart) {
+              console.log('detected existing field, should add decoration')
+            }
+            return true;
+          });
+          // console.log(initialFields);
           return DecorationSet.create(doc, [] as Decoration<IStructuredFieldMeta>[]);
         },
         apply(tr, set: DecorationSet<typeof ReportingSchema>) {
