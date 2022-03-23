@@ -6,6 +6,9 @@ import {ReplaceStep} from "prosemirror-transform"
 
 interface IStructuredFieldMeta {
   isEmpty: boolean;
+  guid: string;
+  'start': number;
+  'end': number;
 }
 
 export class StructuredFieldPlugin extends Plugin<DecorationSet<typeof ReportingSchema>, typeof ReportingSchema> {
