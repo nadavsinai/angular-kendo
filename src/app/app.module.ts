@@ -6,17 +6,20 @@ import {AppComponent} from './app.component';
 import {EditorModule} from '@progress/kendo-angular-editor';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {StructuredFieldButtonComponent} from "src/app/structured-field-button.component";
+import {StructuredFieldPrintButtonComponent} from "./structured-field-print-button.component";
+import {FormsModule} from "@angular/forms";
 
 
 @NgModule({
   declarations: [
-    AppComponent, StructuredFieldButtonComponent
+    AppComponent, StructuredFieldButtonComponent, StructuredFieldPrintButtonComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     EditorModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

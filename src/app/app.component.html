@@ -1,10 +1,17 @@
 <h1>Kendo Editor</h1>
-<kendo-editor #editor [schema]="schema" [iframe]="false" [value]="value" [plugins]="myPlugins">
+<h2>document</h2><pre>{{doc}}</pre>
+<pre>{{stateAsString|json}}</pre>
+<kendo-editor #editor [schema]="schema" [iframe]="false" (valueChange)="doc=$event" [value]="value" [plugins]="myPlugins">
   <kendo-toolbar>
     <kendo-toolbar-button
       text="Bold button"
       (click)="editor.exec('bold')"
     ></kendo-toolbar-button>
+    <kendo-toolbar-button
+      text="serialize"
+      (click)="serialize()"
+    ></kendo-toolbar-button>
     <kendo-toolbar-button sfButtonComponent></kendo-toolbar-button>
+    <kendo-toolbar-button sfPrintButtonComponent></kendo-toolbar-button>
   </kendo-toolbar>
 </kendo-editor>

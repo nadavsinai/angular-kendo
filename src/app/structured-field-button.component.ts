@@ -38,6 +38,6 @@ export class StructuredFieldButtonComponent implements OnInit {
     //   // tr = tr.setSelection(new NodeSelection(resolvedPos));
     //   dispatch(tr);
     // }
-
+    focus();
   }
 }
