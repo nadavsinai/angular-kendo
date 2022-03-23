@@ -13,7 +13,7 @@ import applyDevTools from "prosemirror-dev-tools";
 })
 export class AppComponent {
   title = 'angular-kendo';
-  public value = `<p><philips-sf-start sf-data="123"></philips-sf-start>Demo  <b>content</b><philips-sf-end></philips-sf-end></p>`;
+  public value = `<p><philips-sf-start start=1 end=15 guid="xxxxx"></philips-sf-start>Demo  <b>content</b><philips-sf-end></philips-sf-end></p>`;
   schema: Schema = ReportingSchema
 
   constructor() {
