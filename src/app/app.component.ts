@@ -3,6 +3,8 @@ import {Plugin, Schema} from "@progress/kendo-angular-editor";
 import {inputRule} from "./input-rule";
 import {StructuredFieldPlugin} from "src/app/structured-field.plugin";
 import {ReportingSchema} from "src/app/custom-schema";
+// @ts-ignore
+import applyDevTools from "prosemirror-dev-tools";
 
 @Component({
   selector: 'app-root',
@@ -23,5 +25,8 @@ export class AppComponent {
     inputRule(),
     StructuredFieldPlugin.create()
   ];
+  ngAfterViewInit(): void {
+    applyDevTools(this.editor.view);
+  }
 
 }
