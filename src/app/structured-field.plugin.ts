@@ -11,8 +11,12 @@ interface IStructuredFieldMeta {
   'end': number;
 
 }
+interface StructuredFieldPluginState {
+  debug:Decoration[];
+  decorationSet:DecorationSet;
 
-export class StructuredFieldPlugin extends Plugin<DecorationSet<typeof ReportingSchema>, typeof ReportingSchema> {
+}
+export class StructuredFieldPlugin extends Plugin<StructuredFieldPluginState, typeof ReportingSchema> {
   static instance: StructuredFieldPlugin;
 
   view!: EditorView;
@@ -21,8 +25,8 @@ export class StructuredFieldPlugin extends Plugin<DecorationSet<typeof Reporting
       state: {
         init(_, {schema, doc}) {
           let initDecorationSet :any[] = [];
-          let preInitArr :any[] = [];
-          doc.nodesBetween(0, doc.nodeSize - 2, (node, pos, parent, index) => {
+
+          doc.nodesBetween(0, doc.content.size, (node, pos, parent, index) => {
             if (node.type === schema.nodes.PhilipsStructuredFieldStart) {
               console.log('detected existing field, should add decoration')
               //preInitArr = [...preInitArr , {start: pos, end: -1, attr: node.attrs}];
@@ -33,42 +37,36 @@ export class StructuredFieldPlugin extends Plugin<DecorationSet<typeof Reporting
             return true;
           });
           // console.log(initialFields);
-          return DecorationSet.create(doc, initDecorationSet as Decoration<IStructuredFieldMeta>[]);
+          return {debug:initDecorationSet,decorationSet:DecorationSet.create(doc,initDecorationSet)};
         },
-        apply(tr, oldSet: DecorationSet<typeof ReportingSchema>) {
-          if(tr.getMeta(StructuredFieldPlugin.instance) && tr.docChanged){
-            let set =  tr.getMeta(StructuredFieldPlugin.instance).map(tr.mapping, tr.doc);
-            //--------
-            set.find().forEach((d: any) =>{
-              console.log(d);
-            })
-            if(tr.mapping){
-              tr.mapping.maps.forEach((stepMap, ind) => {
-
-              })
-            }
-            //StructuredFieldPlugin.instance.isInsideSF(tr.doc)
+        apply(tr, oldState: StructuredFieldPluginState) {
+          // @ts-ignore
+          let newSet = oldState.decorationSet;
+          if(tr.getMeta(StructuredFieldPlugin.instance)?.addToState){
+            const newGuid = StructuredFieldPlugin.newGuid();
+            const decoration = Decoration.inline<IStructuredFieldMeta>(tr.selection.from , tr.selection.to  , {style: 'color: blue'},
+                {'start': tr.selection.from, 'end': tr.selection.to, guid: newGuid});//--------
+             newSet = oldState.decorationSet.add(tr.doc,[decoration])
+             //StructuredFieldPlugin.instance.isInsideSF(tr.doc)
             //---------
-            return set;
           }
           else{
-            return oldSet.map(tr.mapping, tr.doc);
+             newSet = oldState.decorationSet.map(tr.mapping, tr.doc);
           }
-          //return (tr.getMeta(StructuredFieldPlugin.instance) || oldSet).map(tr.mapping, tr.doc);
+          return  {...oldState,debug:newSet.find(),decorationSet:newSet};
         },
-        toJSON(decorationSet: DecorationSet<typeof ReportingSchema>) {
-          return   decorationSet.find().reduce((acc,dec,index) =>{
+        toJSON(decorationSet: StructuredFieldPluginState) {
+          return   decorationSet.debug.reduce((acc,dec,index) =>{
             dec.spec.from = dec.from;
             dec.spec.to = dec.to;
             acc[index] = dec.spec;
             return acc;
           },{} as any)
-        }
-
+        },
       },
       view(view){
         StructuredFieldPlugin.instance.view = view;
-        //view.nodeViews = { }
+
         return {update: (view, prevState) => {
           const state = view.state;
             if(prevState && prevState.doc.eq(state.doc) && prevState.selection.eq(state.selection)){
@@ -81,9 +79,7 @@ export class StructuredFieldPlugin extends Plugin<DecorationSet<typeof Reporting
           console.log(StructuredFieldPlugin.instance.getState(view.state)/*.find(from, to)*/);
           return false;
         },
-        decorations(state) {
-          return StructuredFieldPlugin.instance.getState(state)
-        },
+        decorations: getDecorations,
         handlePaste(view: EditorView<typeof ReportingSchema>,event: ClipboardEvent,slice){
           return true;}, // TODO
 
@@ -115,6 +111,11 @@ export class StructuredFieldPlugin extends Plugin<DecorationSet<typeof Reporting
         return res;
       }
     });
+
+    function getDecorations(this:StructuredFieldPlugin,state:EditorState<typeof ReportingSchema>) {
+      return this.getState(state).decorationSet;
+    }
+
     StructuredFieldPlugin.instance = this;
   }
 
@@ -137,35 +138,22 @@ export class StructuredFieldPlugin extends Plugin<DecorationSet<typeof Reporting
     const newFieldStart = state.schema.nodes.PhilipsStructuredFieldStart.create( null, null);
     const newFieldEnd = state.schema.nodes.PhilipsStructuredFieldEnd.create(null, null);
     if (pos.empty) {
-      const textNode = state.schema.text('--');
-      //let newNode = state.schema.nodes.heading.create({level: 1}, textNode);
-      //tr = tr.replaceSelection(new Slice(Fragment.from(textNode), 0, 0));
-      //tr = tr.replaceSelectionWith(textNode);
-      //const resolved = tr.doc.resolve(textNode);
-      //tr = tr.insert(from, textNode);//[newFieldStart, textNode, newFieldEnd]);
-      //let resolved = textNode.resolve();
-      from = tr.selection.from-2;
+      const textNode = state.schema.text('…');
+      //tr = tr.insert(pos.from, textNode);// replaceSelectionWith(textNode);
+      tr = tr.insert(from,[ textNode]);
+      to+= textNode.text.length;
       tr = tr.setSelection(TextSelection.create(tr.doc, from, to));
-      //tr = tr.setSelection(new NodeSelection(resolved));//( TextSelection.create(tr.doc, from, tr.selection.to ));//, from + newFieldStart.content.size + newFieldEnd.content.size + textNode.content.size));
+    }
+    tr = tr.insert(to, newFieldEnd);
+    tr = tr.insert(from, newFieldStart);
 
-    } //else {
-      tr = tr.insert(to, newFieldEnd);
-      tr = tr.insert(from, newFieldStart);
-    //}
-    const newGuid = StructuredFieldPlugin.newGuid();
-    const fromNode = state.doc.resolve(from);
-    const toNode = state.doc.resolve(to);
-    const decoration = Decoration.inline<IStructuredFieldMeta>(from , to  , {style: 'color: blue'},
-      {'start': from, 'end': to, guid: newGuid, ...extraMeta});
-    const newState = this.getState(state).add(tr.doc, [decoration]);
-    //tr = tr.setSelection( TextSelection.create(tr.doc, fromNode.before(), newFieldEnd.after() ));//, from + newFieldStart.content.size + newFieldEnd.content.size + textNode.content.size));
-    tr.setSelection(TextSelection.create(tr.doc, from, to));
-    tr.setMeta(StructuredFieldPlugin.instance, newState);
+    tr =  tr.setMeta(StructuredFieldPlugin.instance,{addToState:true});
+
     return tr;
   }
 
   print(state: EditorState){
-    this.getState(state).find().forEach((dec, index) => {
+    this.getState(state).debug.forEach((dec, index) => {
       const doc = state.doc;
       //const startElem = doc.child(dec.from);
       let att = undefined;
@@ -201,14 +189,14 @@ export class StructuredFieldPlugin extends Plugin<DecorationSet<typeof Reporting
   // }
   // todo : remove()
 
-  isInsideSF(state: EditorState, from: number, to: number) {
-    const decs = this.getState(state);
-    const set = decs.find(from, to);
-    let closest = -1;
-    set.forEach((dec) => {
-      //id(dec.to) //TODO intersection logic should be apply here - consider implement using reduce()
-    })
-  }
+  // isInsideSF(state: EditorState, from: number, to: number) {
+  //   const decs = this.getState(state);
+  //   const set = decs.find(from, to);
+  //   let closest = -1;
+  //   set.forEach((dec) => {
+  //     //id(dec.to) //TODO intersection logic should be apply here - consider implement using reduce()
+  //   })
+  // }
 
 
 
