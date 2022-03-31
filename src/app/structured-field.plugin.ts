@@ -1,8 +1,9 @@
 import {Decoration, DecorationSet, EditorState, EditorView, Plugin, Transaction,} from "@progress/kendo-angular-editor";
 import {ReportingSchema} from "./custom-schema";
 import {Selection, TextSelection, NodeSelection} from "prosemirror-state";
-import {Slice, Fragment} from "prosemirror-model";
+import {Slice, Fragment,} from "prosemirror-model";
 import {ReplaceStep} from "prosemirror-transform"
+import {NodeView} from "prosemirror-view"
 
 
 interface IStructuredFieldMeta {
@@ -75,6 +76,17 @@ export class StructuredFieldPlugin extends Plugin<StructuredFieldPluginState, ty
           }};
       },
       props: {
+        nodeViews:{
+          "PhilipsStructuredFieldStart":
+          (node, view1, getPos, decorations) =>{
+            console.log("nodeView called")
+            return <NodeView>{update:(node,decorations)=>
+              {
+                console.log("nodeView update called")
+              }
+            }
+          }
+        },
         handleTextInput(view, from, to): boolean {
           console.log(StructuredFieldPlugin.instance.getState(view.state)/*.find(from, to)*/);
           return false;
